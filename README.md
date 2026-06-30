@@ -14,11 +14,13 @@ It is useful when:
 
 ## Quick Start
 
-```bash
-python3 scripts/restore_wechat_html.py examples/before.html -o examples/after.generated.html --report
+Ask your agent:
+
+```text
+Use $wechat-html-restore to clean this WeChat article HTML for draft/add.
 ```
 
-The script is local-only. It does not call the WeChat API and does not handle credentials.
+The skill is agent-first. It teaches the agent how to inspect and rewrite the HTML directly, without requiring Python or any runtime.
 
 ## Install As A Codex Skill
 
@@ -34,10 +36,20 @@ Then ask Codex:
 Use $wechat-html-restore to clean this WeChat article HTML for draft/add.
 ```
 
+## Optional Batch Script
+
+For repeated local batch cleanup, the repository also includes a small optional script:
+
+```bash
+python3 scripts/restore_wechat_html.py examples/before.html -o examples/after.generated.html --report
+```
+
+The script is not required by the skill. It is local-only, does not call the WeChat API, and does not handle credentials.
+
 ## Included
 
 - `SKILL.md`: agent instructions.
-- `scripts/restore_wechat_html.py`: deterministic local cleaner.
+- `scripts/restore_wechat_html.py`: optional deterministic local cleaner.
 - `examples/before.html`: unstable editor-style sample.
 - `examples/after.html`: cleaned sample.
 - `assets/example-screenshot.png`: screenshot of the example output.

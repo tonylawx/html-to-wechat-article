@@ -1,0 +1,3 @@
+*.generated.html
+.DS_Store
+__pycache__/

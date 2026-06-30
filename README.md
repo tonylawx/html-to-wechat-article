@@ -1,5 +1,7 @@
 # HTML to WeChat Article Skill
 
+[中文文档](README.zh-CN.md)
+
 A Codex skill for converting, cleaning, and restoring HTML into WeChat Official Account article HTML so rich local/editor templates survive paste and official `draft/add` workflows.
 
 It is useful when:

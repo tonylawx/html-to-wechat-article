@@ -9,6 +9,7 @@ The goal is simple: keep the approved article looking almost exactly the same in
 It is useful when:
 
 - formatting disappears after sending HTML to the draft box
+- the same HTML looks different in local preview, editor paste, and official `draft/add`
 - WeChat exposes table cell borders
 - heading lines wrap or indent strangely on mobile preview
 - editor-export attributes make the final draft unstable
@@ -25,6 +26,15 @@ Use $html-to-wechat-article to convert this HTML into a WeChat article for draft
 ```
 
 The skill is agent-first. It teaches the agent how to inspect and rewrite the HTML directly, without requiring Python or any runtime.
+
+## Field Notes
+
+- Decide the target path first. Local browser preview, WeChat editor paste, and official `draft/add` are different renderers.
+- If a raw approved template already survives the target path, keep it raw. Switch to cleaned HTML when mobile preview shows fake indentation, stretched Chinese text, exposed table borders, or missing styles.
+- Body images and cover images are different WeChat API concepts. Body images should be uploaded to content image storage and replaced with the returned hosted `url`; cover thumbnails need a `thumb_media_id`.
+- Publishing errors such as credentials, IP whitelist, proxy, SSH, or network failures are not HTML problems. Fix the publishing path before rewriting the article.
+- Do not add `content_source_url`, source links, video links, or provenance footers unless the user asks for them.
+- If the draft title is supplied as API metadata, avoid repeating the same H1 title inside the body unless the approved template visibly includes it.
 
 ## Install As A Codex Skill
 
@@ -48,7 +58,13 @@ For repeated local batch cleanup, the repository also includes a small optional 
 python3 scripts/restore_wechat_html.py examples/before.html -o examples/after.generated.html --report
 ```
 
-The script is not required by the skill. It is local-only, does not call the WeChat API, and does not handle credentials.
+Use `--keep-tables` when the article contains real data tables such as comparison tables or parameter grids:
+
+```bash
+python3 scripts/restore_wechat_html.py article.html -o article.wechat.html --keep-tables --report
+```
+
+The script is not required by the skill. It is local-only, does not call the WeChat API, does not upload images, and does not handle credentials.
 
 ## Included
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import re
+from html import unescape
 from pathlib import Path
 
 
@@ -35,7 +36,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--keep-tables",
         action="store_true",
-        help="Keep table/tr/td tags. By default layout tables are flattened.",
+        help="Keep table/tr/td tags. Use for real data/comparison tables; by default layout tables are flattened.",
     )
     parser.add_argument(
         "--keep-justify",
@@ -78,7 +79,9 @@ def normalize_styles(
         normalized_value = re.sub(r"\s*!important\s*$", "", value, flags=re.I).strip().lower()
 
         if key == "text-align" and normalized_value == "justify" and not keep_justify:
-            value = "left"
+            value = "left !important"
+        elif key == "text-align" and normalized_value == "left":
+            value = "left !important"
         if key == "max-width" and not keep_max_width:
             continue
         if key == "margin" and value.lower() == "0 auto":
@@ -105,6 +108,7 @@ def normalize_styles(
     if align == "left":
         for key, value in {
             "text-align-last": "left",
+            "letter-spacing": "0",
             "word-spacing": "normal",
             "white-space": "normal",
             "word-break": "normal",
@@ -165,10 +169,37 @@ def flatten_layout_tables(html: str) -> str:
     return html
 
 
+def text_content(html_fragment: str) -> str:
+    return unescape(re.sub(r"<[^>]+>", "", html_fragment)).strip()
+
+
 def remove_hidden_keyword_blocks(html: str) -> str:
-    hidden_style = r'[^"]*(?:display\s*:\s*none|visibility\s*:\s*hidden|font-size\s*:\s*0|opacity\s*:\s*0)[^"]*'
-    html = re.sub(rf"<([a-z0-9]+)([^>]*style=\"{hidden_style}\"[^>]*)>.*?</\1>", "", html, flags=re.I | re.S)
-    html = re.sub(rf"<([a-z0-9]+)([^>]*style=\'{hidden_style}\'[^>]*)>.*?</\1>", "", html, flags=re.I | re.S)
+    always_hidden = r"display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0"
+    zero_font = r"font-size\s*:\s*0(?:px|em|rem|%)?\b"
+
+    def remove_by_style(
+        source: str,
+        style_pattern: str,
+        *,
+        require_text: bool = False,
+    ) -> str:
+        def replace(match: re.Match[str]) -> str:
+            inner = match.group(3)
+            if require_text and not text_content(inner):
+                return match.group(0)
+            return ""
+
+        for quote in ('"', "'"):
+            source = re.sub(
+                rf"<([a-z0-9]+)([^>]*style={quote}[^>]*(?:{style_pattern})[^>]*{quote}[^>]*)>(.*?)</\1>",
+                replace,
+                source,
+                flags=re.I | re.S,
+            )
+        return source
+
+    html = remove_by_style(html, always_hidden)
+    html = remove_by_style(html, zero_font, require_text=True)
     return html
 
 
@@ -203,7 +234,7 @@ def report(before: str, after: str) -> str:
         ("table tags", count(r"</?table\b|</?td\b", before), count(r"</?table\b|</?td\b", after)),
         ("h1/h2 tags", count(r"</?h[12]\b", before), count(r"</?h[12]\b", after)),
         ("editor attrs", sum(count(p, before) for p in EDITOR_ATTR_PATTERNS), sum(count(p, after) for p in EDITOR_ATTR_PATTERNS)),
-        ("hidden blocks", count(r"display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0", before), count(r"display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0", after)),
+        ("hidden markers", count(r"display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0|font-size\s*:\s*0", before), count(r"display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0|font-size\s*:\s*0", after)),
     ]
     lines = ["metric,before,after"]
     lines.extend(f"{name},{before_value},{after_value}" for name, before_value, after_value in rows)

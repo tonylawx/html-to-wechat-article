@@ -17,8 +17,9 @@ Preserve the approved visual result almost exactly. Do not redesign, restyle, su
 2. Identify the visible design contract: top metadata line, hero image, section labels, headings, body text, CTA/footer, QR, disclaimer.
 3. Edit the HTML directly. Preserve visible content, spacing, colors, typography, image sizing, and inline styles that matter; simplify only the fragile DOM.
 4. Re-open the edited HTML locally and compare against the source.
-5. If publishing through official `draft/add`, prefer the simplified HTML when the original preview shows missing styles, table borders, fake indentation, or broken heading lines.
-6. If the user has already confirmed that a raw rendered template survives `draft/add`, do not clean it again unless the mobile preview regresses.
+5. Decide the publishing path before changing markup: local preview, editor paste, and official `draft/add` can render the same HTML differently.
+6. If the user has already confirmed that a raw rendered template survives the target path, do not clean it again unless the mobile preview regresses.
+7. If publishing through official `draft/add`, prefer the simplified HTML when the original preview shows missing styles, table borders, fake indentation, stretched Chinese text, or broken heading lines.
 
 This skill does not require Python. Use normal file-reading/search/editing tools. The optional script in `scripts/` is only a reference implementation for batch jobs.
 
@@ -31,22 +32,24 @@ Apply these transformations intentionally, not blindly:
    - remove `mpa-font-style`
    - remove `data-*` unless the user explicitly needs editor-export fidelity
 2. Remove hidden keyword blocks:
-   - remove blocks styled with `display:none`, `visibility:hidden`, `opacity:0`, or `font-size:0`
+   - remove blocks styled with `display:none`, `visibility:hidden`, or `opacity:0`
+   - treat `font-size:0` as hidden only when the block carries hidden text; keep empty decorative rule spans that use `font-size:0`
    - keep visible, subtle SEO lines if the user asked for them
 3. Replace layout tables:
    - convert `table`, `tbody`, `tr` wrappers to simple `section` or `div`
    - convert label `td` cells to `span`
-   - keep real data tables only when the article genuinely contains tabular data
+   - keep real data tables only when the article genuinely contains tabular data; use the bundled script with `--keep-tables` for comparison tables or parameter grids
 4. Stabilize headings:
    - if `h1/h2` render badly in WeChat mobile preview, replace them with styled `p` blocks
    - keep the visual font size, weight, color, and margins
    - avoid putting long Chinese titles on the same line as decorative rules
 5. Normalize risky styles:
-   - change `text-align:justify` to `text-align:left` when it creates fake indentation
+   - change `text-align:justify` to `text-align:left !important` when it creates fake indentation
    - change `text-indent` to `0`
    - reduce excessive Chinese heading `letter-spacing` to `0` or about `1px`
    - remove `max-width` if WeChat drops centering assumptions
    - add `box-sizing:border-box` to major containers when widths/padding matter
+   - for body copy that will go through `draft/add`, prefer `text-align:left !important;text-align-last:left;letter-spacing:0;word-spacing:normal;white-space:normal;word-break:normal`
 
 ## What To Preserve
 
@@ -109,6 +112,15 @@ Stable replacement:
 
 For local previews, `file:///absolute/path/image.jpg` is fine. For official `draft/add`, local images must be uploaded to WeChat content image storage by the publishing workflow before draft creation. This skill only prepares the HTML shape; it does not call the WeChat API.
 
+Body images and cover images use different WeChat API concepts. Body images are uploaded to content image storage and the returned hosted `url` replaces the HTML `src`; cover thumbnails need a `thumb_media_id`. Do not expect a body-image upload to return a reusable cover `media_id`.
+
+## Publishing Boundaries
+
+- Keep this skill focused on HTML shape. If `draft/add` fails with credentials, IP whitelist, proxy, SSH, or other network errors, diagnose the publishing workflow before rewriting the article.
+- Do not add `content_source_url`, source links, video links, or provenance footers unless the user explicitly asks for them.
+- If the WeChat draft title is supplied as API metadata, avoid repeating the same H1 title inside the body unless the approved visual template includes a visible title block.
+- Before handoff to a publisher, confirm local `file://` images and relative image paths will be uploaded or converted by that publisher.
+
 ## Validation Checklist
 
 Before handing off:
@@ -118,10 +130,13 @@ Before handing off:
 - Layout tables are gone unless they are real data tables.
 - Section labels do not use `table` or `td`.
 - Body copy has stable alignment and no fake first-line indentation.
+- Real data tables, if any, still retain their information structure.
+- Official `draft/add` output has no unintended duplicate title block.
+- Any local image paths are accounted for by the downstream publishing workflow.
 - The output has one obvious root article container and no hidden keyword stuffing.
 - A quick text search confirms no unexpected fragile tags/attributes remain.
 
 ## Bundled Resources
 
-- `scripts/restore_wechat_html.py`: optional local cleaner and reporter for batch jobs; do not require it for normal agent use.
+- `scripts/restore_wechat_html.py`: optional local cleaner and reporter for batch jobs; do not require it for normal agent use. Use `--keep-tables` when tables are real article content rather than layout.
 - `examples/`: before/after HTML and screenshot assets for quick orientation.

@@ -34,6 +34,7 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 
 - HTML 发到公众号草稿箱后格式丢失。
 - 本地浏览器看起来正常，但微信手机预览不对。
+- 同一份 HTML 在浏览器、编辑器粘贴、官方 `draft/add` 里表现不一致。
 - 用 `table` 做小标题装饰，发出去后出现边框。
 - 小标题旁边的线条在手机上掉到下一行。
 - `h1`、`h2`、`text-align:justify` 导致中文标题或正文假缩进。
@@ -57,7 +58,8 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 3. 直接编辑 HTML，保留真正影响视觉的颜色、字号、间距、图片尺寸和行内样式。
 4. 清掉脆弱结构，例如布局表格、编辑器属性、隐藏块、过度 `letter-spacing`。
 5. 本地重新打开 HTML，对比原版。
-6. 如果要走微信官方 `draft/add`，优先使用已稳定化的 HTML。
+6. 先判断发布路径：浏览器预览、编辑器粘贴、官方 `draft/add` 不是同一个渲染环境。
+7. 如果用户已经确认原始 HTML 在目标路径里正常，就不要再次清洗；如果手机预览出现假缩进、标题拉伸、表格边框或图片丢失，再切到稳定化 HTML。
 
 ## 常见清洗规则
 
@@ -72,13 +74,16 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 - `display:none`
 - `visibility:hidden`
 - `opacity:0`
-- `font-size:0`
+- 携带隐藏文字的 `font-size:0`
+
+注意：有些装饰横线会用空的 `font-size:0` span 来稳定高度，这种不应该删。
 
 替换布局表格：
 
 - `table` / `tbody` / `tr` 改成 `section` 或 `div`
 - 装饰用 `td` 改成 `span`
-- 真实数据表格可以保留
+- 真实数据表格可以保留；例如期权参数表、买方/卖方对照表、价格/指标表
+- 使用可选脚本处理真实表格时，加 `--keep-tables`
 
 稳定标题：
 
@@ -88,10 +93,20 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 
 稳定正文：
 
-- 视情况把 `text-align:justify` 改成 `text-align:left`
+- 视情况把 `text-align:justify` 改成 `text-align:left !important`
 - 把 `text-indent` 改成 `0`
 - 过大的中文 `letter-spacing` 改成 `0` 或约 `1px`
 - 容器上保留或补充 `box-sizing:border-box`
+- 走官方 `draft/add` 时，正文优先使用 `text-align:left !important;text-align-last:left;letter-spacing:0;word-spacing:normal;white-space:normal;word-break:normal`
+
+## 发布前坑位
+
+- 这个 skill 只处理 HTML 形状，不调用微信 API。
+- 如果 `draft/add` 报凭证、IP 白名单、代理、SSH、网络连接错误，先修发布链路，不要急着重写 HTML。
+- 正文图片和封面不是一回事：正文图片上传后通常拿到的是微信托管 `url`，要替换 HTML 里的 `src`；封面缩略图需要的是 `thumb_media_id`。
+- 本地 `file://` 图片、绝对路径图片、相对路径图片，发布前都要由发布脚本上传或替换成微信可访问 URL。
+- 如果草稿标题已经作为 API metadata 传入，正文里不要再重复一个 H1 标题，除非原始视觉模板本来就需要显示标题块。
+- 不要默认补 `content_source_url`、原文链接、视频链接或来源说明，除非用户明确要求。
 
 ## 小标题推荐写法
 
@@ -125,6 +140,12 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 
 ```bash
 python3 scripts/restore_wechat_html.py examples/before.html -o examples/after.generated.html --report
+```
+
+如果文章里有真实数据表：
+
+```bash
+python3 scripts/restore_wechat_html.py article.html -o article.wechat.html --keep-tables --report
 ```
 
 注意：这个脚本不是必须的。skill 的主流程是 agent 直接处理 HTML。

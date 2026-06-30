@@ -1,4 +1,4 @@
 display_information:
   display_name: "HTML to WeChat Article"
-  short_description: "Agent-first HTML to WeChat article cleanup for draft/add and paste workflows."
-  default_prompt: "Use $html-to-wechat-article to repair this HTML directly so it keeps the approved WeChat article template in draft/add."
+  short_description: "Agent-first HTML to WeChat article conversion with near-100% visual restoration."
+  default_prompt: "Use $html-to-wechat-article to repair this HTML directly so it preserves the approved WeChat article template as close to 100% as possible in draft/add."

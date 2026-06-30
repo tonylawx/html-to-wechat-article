@@ -1,21 +1,21 @@
 ---
 name: html-to-wechat-article
-description: Convert, restore, and clean HTML into WeChat Official Account article HTML so rich local/editor templates survive WeChat draft/add and paste workflows. Use when a user asks for HTML to WeChat article conversion, WeChat/微信公众号 HTML cleanup, article template restoration, draft-add-ready HTML, or fixing formatting that disappears, table borders, broken heading rules, or editor-export markup after publishing.
+description: Convert, restore, and clean HTML into WeChat Official Account article HTML with near-100% visual restoration of the approved template while surviving WeChat draft/add and paste workflows. Use when a user asks for HTML to WeChat article conversion, WeChat/微信公众号 HTML cleanup, article template restoration, draft-add-ready HTML, or fixing formatting that disappears, table borders, broken heading rules, or editor-export markup after publishing.
 ---
 
 # WeChat HTML Restore
 
-Use this skill to turn a visually approved WeChat article template into stable HTML that can be pasted into the editor or sent through official `draft/add`.
+Use this skill to turn a visually approved WeChat article template into stable HTML that can be pasted into the editor or sent through official `draft/add`, while aiming for near-100% visual restoration of the original design.
 
 ## Core Rule
 
-Preserve the approved visual intent, not the original DOM. WeChat often rewrites editor HTML, exposes table borders, drops fragile attributes, and changes heading layout. Keep the visible typography and spacing, but simplify structures that are known to break.
+Preserve the approved visual result almost exactly. Do not redesign, restyle, summarize, or "improve" the article unless the user asks. WeChat often rewrites editor HTML, exposes table borders, drops fragile attributes, and changes heading layout, so the DOM may change, but the reader-facing result should stay as close as possible to the source. Treat near-100% visual restoration as the goal; change markup only where the original DOM is likely to break in WeChat.
 
 ## Agent-First Workflow
 
 1. Inspect the source HTML in a browser or screenshot before changing it.
 2. Identify the visible design contract: top metadata line, hero image, section labels, headings, body text, CTA/footer, QR, disclaimer.
-3. Edit the HTML directly. Preserve visible content and inline styles that matter; simplify only the fragile DOM.
+3. Edit the HTML directly. Preserve visible content, spacing, colors, typography, image sizing, and inline styles that matter; simplify only the fragile DOM.
 4. Re-open the edited HTML locally and compare against the source.
 5. If publishing through official `draft/add`, prefer the simplified HTML when the original preview shows missing styles, table borders, fake indentation, or broken heading lines.
 6. If the user has already confirmed that a raw rendered template survives `draft/add`, do not clean it again unless the mobile preview regresses.
@@ -50,6 +50,7 @@ Apply these transformations intentionally, not blindly:
 
 ## What To Preserve
 
+- The approved visual design as close to 100% as WeChat allows.
 - Inline styles that define the approved look.
 - The same article order and section rhythm.
 - Visible SEO or keyword line if the user asked for it.

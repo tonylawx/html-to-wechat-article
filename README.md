@@ -2,7 +2,9 @@
 
 [中文文档](README.zh-CN.md)
 
-A Codex skill for converting, cleaning, and restoring HTML into WeChat Official Account article HTML so rich local/editor templates survive paste and official `draft/add` workflows.
+A Codex skill for converting, cleaning, and restoring HTML into WeChat Official Account article HTML with near-100% visual restoration, so rich local/editor templates survive paste and official `draft/add` workflows.
+
+The goal is simple: keep the approved article looking almost exactly the same in WeChat. The agent should change markup only when the original DOM is likely to break inside WeChat.
 
 It is useful when:
 
@@ -19,7 +21,7 @@ It is useful when:
 Ask your agent:
 
 ```text
-Use $html-to-wechat-article to clean this HTML into a WeChat article for draft/add.
+Use $html-to-wechat-article to convert this HTML into a WeChat article for draft/add while preserving the approved visual template as close to 100% as possible.
 ```
 
 The skill is agent-first. It teaches the agent how to inspect and rewrite the HTML directly, without requiring Python or any runtime.
@@ -35,7 +37,7 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 Then ask Codex:
 
 ```text
-Use $html-to-wechat-article to clean this HTML into a WeChat article for draft/add.
+Use $html-to-wechat-article to convert this HTML into a WeChat article for draft/add while preserving the approved visual template as close to 100% as possible.
 ```
 
 ## Optional Batch Script

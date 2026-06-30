@@ -2,7 +2,7 @@
 
 这是一个 Codex skill，用来把普通 HTML、编辑器导出的 HTML、或者本地设计好的文章模板，整理成更适合微信公众号文章编辑器和官方 `draft/add` 草稿接口的 HTML。
 
-它的重点不是套固定模板，而是让 agent 保留已经确认过的视觉效果，同时把容易在微信里翻车的 DOM 结构清掉。
+它的核心目标是：**基本 100% 还原已经确认过的文章视觉效果**。不是套固定模板，也不是重新设计，而是在尽量不改变观感的前提下，把容易在微信里翻车的 DOM 结构清掉。
 
 ![示例图](assets/example-screenshot.png)
 
@@ -11,13 +11,13 @@
 把下面这句发给 agent 就能开始：
 
 ```text
-Install and use the GitHub skill at https://github.com/tonylawx/html-to-wechat-article to convert my HTML into WeChat Official Account article HTML that preserves the approved visual template and is stable for draft/add.
+Install and use the GitHub skill at https://github.com/tonylawx/html-to-wechat-article to convert my HTML into WeChat Official Account article HTML, preserving the approved visual template as close to 100% as possible while keeping it stable for draft/add.
 ```
 
 如果 skill 已经装好了，可以直接说：
 
 ```text
-Use $html-to-wechat-article to clean this HTML into a WeChat article for draft/add.
+Use $html-to-wechat-article to convert this HTML into a WeChat article for draft/add，尽量 100% 还原原始视觉模板。
 ```
 
 ## 安装
@@ -42,9 +42,9 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 
 ## 设计原则
 
-保留视觉意图，不迷信原始 DOM。
+基本 100% 还原视觉结果，不迷信原始 DOM。
 
-微信公众号会重写一部分 HTML，尤其是编辑器导出的复杂结构、布局表格、标题标签、隐藏块和部分行内样式。这个 skill 会指导 agent 先看清楚“最终应该长什么样”，然后只改那些会破坏微信渲染稳定性的结构。
+微信公众号会重写一部分 HTML，尤其是编辑器导出的复杂结构、布局表格、标题标签、隐藏块和部分行内样式。这个 skill 会指导 agent 先看清楚“最终应该长什么样”，然后只改那些会破坏微信渲染稳定性的结构。颜色、字号、间距、图片比例、小标题层级、CTA 和二维码区域，都应该尽量贴近原版。
 
 ## Agent-First 工作流
 
@@ -52,9 +52,9 @@ git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills
 
 推荐流程：
 
-1. 打开原始 HTML 或截图，确认已经认可的视觉效果。
+1. 打开原始 HTML 或截图，确认已经认可的视觉效果，把它当成接近 100% 还原目标。
 2. 提炼设计契约：顶部关键词、头图、小标题、正文、关注卡片、二维码、免责声明等。
-3. 直接编辑 HTML，保留真正影响视觉的行内样式。
+3. 直接编辑 HTML，保留真正影响视觉的颜色、字号、间距、图片尺寸和行内样式。
 4. 清掉脆弱结构，例如布局表格、编辑器属性、隐藏块、过度 `letter-spacing`。
 5. 本地重新打开 HTML，对比原版。
 6. 如果要走微信官方 `draft/add`，优先使用已稳定化的 HTML。

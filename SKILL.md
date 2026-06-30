@@ -1,6 +1,6 @@
 ---
-name: wechat-html-restore
-description: Restore and clean WeChat Official Account article HTML so rich local/editor templates survive WeChat draft/add and paste workflows. Use when a user asks to convert, sanitize, repair, stabilize, or make a WeChat/微信公众号 article template copyable or draft-add-ready, especially when formatting disappears, table borders appear, heading rules wrap badly, or editor-export markup renders differently after publishing.
+name: html-to-wechat-article
+description: Convert, restore, and clean HTML into WeChat Official Account article HTML so rich local/editor templates survive WeChat draft/add and paste workflows. Use when a user asks for HTML to WeChat article conversion, WeChat/微信公众号 HTML cleanup, article template restoration, draft-add-ready HTML, or fixing formatting that disappears, table borders, broken heading rules, or editor-export markup after publishing.
 ---
 
 # WeChat HTML Restore

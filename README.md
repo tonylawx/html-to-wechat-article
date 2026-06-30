@@ -1,6 +1,6 @@
-# WeChat HTML Restore Skill
+# HTML to WeChat Article Skill
 
-A Codex skill for cleaning and restoring WeChat Official Account article HTML so rich local/editor templates survive paste and official `draft/add` workflows.
+A Codex skill for converting, cleaning, and restoring HTML into WeChat Official Account article HTML so rich local/editor templates survive paste and official `draft/add` workflows.
 
 It is useful when:
 
@@ -17,7 +17,7 @@ It is useful when:
 Ask your agent:
 
 ```text
-Use $wechat-html-restore to clean this WeChat article HTML for draft/add.
+Use $html-to-wechat-article to clean this HTML into a WeChat article for draft/add.
 ```
 
 The skill is agent-first. It teaches the agent how to inspect and rewrite the HTML directly, without requiring Python or any runtime.
@@ -27,13 +27,13 @@ The skill is agent-first. It teaches the agent how to inspect and rewrite the HT
 Copy or clone this repository into your Codex skills directory:
 
 ```bash
-git clone https://github.com/tonylawx/wechat-html-restore-skill.git ~/.codex/skills/wechat-html-restore
+git clone https://github.com/tonylawx/html-to-wechat-article.git ~/.codex/skills/html-to-wechat-article
 ```
 
 Then ask Codex:
 
 ```text
-Use $wechat-html-restore to clean this WeChat article HTML for draft/add.
+Use $html-to-wechat-article to clean this HTML into a WeChat article for draft/add.
 ```
 
 ## Optional Batch Script

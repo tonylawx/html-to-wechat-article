@@ -1,4 +1,4 @@
 display_information:
-  display_name: "WeChat HTML Restore"
-  short_description: "Agent-first WeChat HTML cleanup for draft/add and paste workflows."
-  default_prompt: "Use $wechat-html-restore to repair this WeChat article HTML directly so it keeps the approved visual template in draft/add."
+  display_name: "HTML to WeChat Article"
+  short_description: "Agent-first HTML to WeChat article cleanup for draft/add and paste workflows."
+  default_prompt: "Use $html-to-wechat-article to repair this HTML directly so it keeps the approved WeChat article template in draft/add."
